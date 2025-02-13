@@ -1,0 +1,29 @@
+/Flight-Analysis-Project
+│── README.md
+│── Data/
+│── Reports/
+│── DAX_Calculations.dax
+│── PowerBI_Flight_Analysis.pbix
+
+--Total Number of Delayed Flights
+Total(15min)delayed flights = sum('Airline Delays'[Total Arrivals  >15 Delay (Minutes)])
+
+--Total Number of flights
+Total flight A rrival = SUM('Airline Delays'[Total Flights Arrival])
+
+--Top/Bottom Airport ranking
+Airport Flight ranking = 
+var topport=
+IF(ISINSCOPE('Airline Delays'[Airport Name]),RANKX(ALL('Airline Delays'[Airport Name]),[Total flight A rrival], ,DESC))
+var bottomport=
+IF(ISINSCOPE('Airline Delays'[Airport Name]),RANKX(ALL('Airline Delays'[Airport Name]),[Total flight A rrival], ,ASC))
+var ranking=
+IF(SELECTEDVALUE('Top/Botom'[Value])="top",topport,bottomport)
+RETURN
+IF(ranking<='Top N Parameter'[Top N Parameter Value],[Total flight A rrival])
+
+--Flight delay breakdown
+
+Flight delay breakdown = 
+IF([Total(15min)delayed flights]<=15,"On-Time Delay",
+        IF([Total(15min)delayed flights]>15, AND([Total(15min)delayed flights]<=60,"Moderate Delay"),"Long Delay"))
